@@ -139,25 +139,25 @@ mall
 
 ## 运行效果展示
 
-- 查看注册中心注册服务信息，访问地址：http://192.168.3.101:8848/nacos/
+- 查看注册中心注册服务信息，访问地址：http://192.168.118.132:8848/nacos/
 
 ![](./document/resource/re_mall_swarm_run_01.png)
 
-- 监控中心应用信息，访问地址：http://192.168.3.101:8101
+- 监控中心应用信息，访问地址：http://192.168.118.132:8101
 
 ![](./document/resource/re_mall_swarm_run_02.png)
 
 ![](./document/resource/re_mall_swarm_run_03.png)
 
-- API文档信息，访问地址：http://192.168.3.101:8201
+- API文档信息，访问地址：http://192.168.118.132:8201
 
 ![](./document/resource/re_mall_swarm_run_04.png)
 
-- 日志收集系统信息，访问地址：http://192.168.3.101:5601
+- 日志收集系统信息，访问地址：http://192.168.118.132:5601
 
 ![](./document/resource/re_mall_swarm_run_05.png)
 
-- 使用Kubernetes部署后项目运行状态，访问地址：http://192.168.3.101:30880
+- 使用Kubernetes部署后项目运行状态，访问地址：http://192.168.118.132:30880
 
 ![](document/resource/re_mall_swarm_run_06.png)
 

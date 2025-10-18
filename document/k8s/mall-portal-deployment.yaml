@@ -29,9 +29,9 @@ spec:
               value: Asia/Shanghai
             # 指定Nacos地址
             - name: spring.cloud.nacos.discovery.server-addr
-              value: http://192.168.3.101:8848
+              value: http://192.168.118.132:8848
             - name: spring.cloud.nacos.config.server-addr
-              value: http://192.168.3.101:8848
+              value: http://192.168.118.132:8848
           volumeMounts:
             - mountPath: /var/logs
               name: log-volume
