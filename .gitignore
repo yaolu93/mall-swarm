@@ -9,3 +9,10 @@ target/
 .settings/
 .classpath
 .project
+
+# RabbitMQ Test Logs #
+.rabbitmq-logs/
+rabbitmq-test-*.log
+
+# Test Output #
+.test-output/
