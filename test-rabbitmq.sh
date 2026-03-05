@@ -198,12 +198,14 @@ send_test_message() {
     log_info "  Order ID: $order_id"
     log_info "  Delay: ${delay_ms}ms ($(echo "scale=2; $delay_ms/1000" | bc)s)"
     
-    # 使用 rabbitmqadmin 或直接通过 HTTP API 发送消息
-    # 这里我们通过 RabbitMQ HTTP API 发送消息
+    # 使用 rabbitmqctl 在容器内发送消息（支持 Long 类型）
+    # 或者直接通过 HTTP API 使用 JSON 序列化格式
     
+    # 方法1：直接通过 HTTP API 发送简单文本消息（content_type 默认为 text/plain）
     PAYLOAD="{
         \"properties\": {
             \"delivery_mode\": 2,
+            \"expiration\": \"$delay_ms\",
             \"headers\": {}
         },
         \"routing_key\": \"mall.order.cancel.ttl\",
