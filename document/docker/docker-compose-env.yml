@@ -14,7 +14,10 @@ services:
       - /mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
       - /mydata/mysql/log:/var/log/mysql #日志文件挂载
     networks:
-      - mall-network
+      mall-network:
+        aliases:
+          - db
+          - mysql
   redis:
     image: redis:7
     container_name: redis
@@ -50,7 +53,10 @@ services:
       - 5672:5672
       - 15672:15672
     networks:
-      - mall-network
+      mall-network:
+        aliases:
+          - rabbit
+          - rabbitmq
   elasticsearch:
     image: elasticsearch:7.17.3
     container_name: elasticsearch
