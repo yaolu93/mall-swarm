@@ -1,0 +1,566 @@
+{
+  "info": {
+    "name": "MALL-SWARM API Tests",
+    "description": "Mall Swarm 微服务电商系统 API测试集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "认证服务",
+      "item": [
+        {
+          "name": "管理后台登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/admin/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "admin",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "前台用户注册",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"password\": \"123456\",\n  \"email\": \"test@example.com\",\n  \"phone\": \"13800138000\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/sso/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "sso",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "前台用户登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/sso/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "sso",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "获取验证码",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/sso/getAuthCode?phone=13800138000",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "sso",
+                "getAuthCode"
+              ],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "13800138000"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "后台管理 - 商品管理",
+      "item": [
+        {
+          "name": "查询商品列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/product/list?pageNum=1&pageSize=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "product",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "pageNum",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "查询商品详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/product/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "product",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "创建商品",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"新商品\",\n  \"description\": \"商品描述\",\n  \"brandId\": 1,\n  \"categoryId\": 1,\n  \"price\": 99.99,\n  \"stock\": 100\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/product/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "product",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "更新商品",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 29,\n  \"name\": \"更新后的商品名\",\n  \"description\": \"更新后的描述\",\n  \"price\": 88.88,\n  \"stock\": 200\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/product/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "product",
+                "update",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "删除商品",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/product/delete/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "product",
+                "delete",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "后台管理 - 订单管理",
+      "item": [
+        {
+          "name": "查询订单列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/order/list?pageNum=1&pageSize=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "order",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "pageNum",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "查询订单详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-admin/order/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-admin",
+                "order",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "前台商城 - 商品浏览",
+      "item": [
+        {
+          "name": "查询商品列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/product/list?pageNum=1&pageSize=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "product",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "pageNum",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "查询商品详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/product/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "product",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "品牌列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8201/mall-portal/brand/list?pageNum=1&pageSize=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-portal",
+                "brand",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "pageNum",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "搜索服务",
+      "item": [
+        {
+          "name": "搜索商品",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8201/mall-search/product/search?keyword=茶&pageNum=1&pageSize=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "mall-search",
+                "product",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "茶"
+                },
+                {
+                  "key": "pageNum",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "监控和健康检查",
+      "item": [
+        {
+          "name": "Admin服务健康检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/actuator/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "网关健康检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8201/actuator/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8201",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "JVM内存信息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/actuator/metrics/jvm.memory.used",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "actuator",
+                "metrics",
+                "jvm.memory.used"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "type": "string",
+      "id": "adminToken",
+      "key": "adminToken",
+      "value": "your-admin-token-here",
+      "description": "管理员登录token，通过登录API获取"
+    },
+    {
+      "type": "string",
+      "id": "userToken",
+      "key": "userToken",
+      "value": "your-user-token-here",
+      "description": "普通用户登录token，通过登录API获取"
+    }
+  ]
+}

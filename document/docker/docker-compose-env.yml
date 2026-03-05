@@ -13,6 +13,8 @@ services:
       - /mydata/mysql/data/db:/var/lib/mysql #数据文件挂载
       - /mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
       - /mydata/mysql/log:/var/log/mysql #日志文件挂载
+    networks:
+      - mall-network
   redis:
     image: redis:7
     container_name: redis
@@ -21,6 +23,8 @@ services:
       - /mydata/redis/data:/data #数据文件挂载
     ports:
       - 6379:6379
+    networks:
+      - mall-network
   nginx:
     image: nginx:1.22
     container_name: nginx
@@ -30,15 +34,23 @@ services:
       - /mydata/nginx/log:/var/log/nginx #日志文件挂载
     ports:
       - 80:80
+    networks:
+      - mall-network
   rabbitmq:
     image: rabbitmq:3.9.11-management
     container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: mall
+      RABBITMQ_DEFAULT_PASS: mall
+      RABBITMQ_DEFAULT_VHOST: /mall
     volumes:
       - /mydata/rabbitmq/data:/var/lib/rabbitmq #数据文件挂载
       - /mydata/rabbitmq/log:/var/log/rabbitmq #日志文件挂载
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - mall-network
   elasticsearch:
     image: elasticsearch:7.17.3
     container_name: elasticsearch
@@ -53,6 +65,8 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    networks:
+      - mall-network
   logstash:
     image: logstash:7.17.3
     container_name: logstash
@@ -69,6 +83,8 @@ services:
       - 4561:4561
       - 4562:4562
       - 4563:4563
+    networks:
+      - mall-network
   kibana:
     image: kibana:7.17.3
     container_name: kibana
@@ -80,6 +96,8 @@ services:
       - "elasticsearch.hosts=http://es:9200" #设置访问elasticsearch的地址
     ports:
       - 5601:5601
+    networks:
+      - mall-network
   mongo:
     image: mongo:4
     container_name: mongo
@@ -87,6 +105,8 @@ services:
       - /mydata/mongo/db:/data/db #数据文件挂载
     ports:
       - 27017:27017
+    networks:
+      - mall-network
   nacos-registry:
     image: nacos/nacos-server:v2.1.0
     container_name: nacos-registry
@@ -94,3 +114,10 @@ services:
       - "MODE=standalone"
     ports:
       - 8848:8848
+      - 9848:9848
+    networks:
+      - mall-network
+
+networks:
+  mall-network:
+    driver: bridge

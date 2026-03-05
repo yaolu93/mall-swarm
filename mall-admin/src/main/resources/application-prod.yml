@@ -1,0 +1,69 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:db}:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: ${DB_USERNAME:reader}
+    password: ${DB_PASSWORD:123456}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      database: 0
+      port: 6379
+      password: ${REDIS_PASSWORD:}
+      timeout: 5000ms
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: /var/logs
+  level:
+    root: warn
+    com.macro.mall: info
+    org.springframework: warn
+    org.springframework.boot: warn
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+sa-token:
+  timeout: 3600
+  active-timeout: 1800
+  refresh-time: 600
+  is-concurrent: false
+  is-log: false
+  jwt-secret-key: ${JWT_SECRET_KEY}
+  is-print: false
+
+aliyun:
+  oss:
+    endpoint: ${ALIYUN_OSS_ENDPOINT}
+    accessKeyId: ${ALIYUN_OSS_ACCESS_KEY_ID}
+    accessKeySecret: ${ALIYUN_OSS_ACCESS_KEY_SECRET}
+    bucketName: ${ALIYUN_OSS_BUCKET_NAME}
+    policy:
+      expire: 300
+    maxSize: 10
+    callback: ${ALIYUN_OSS_CALLBACK}
+    dir:
+      prefix: mall/images/
+
+minio:
+  endpoint: ${MINIO_ENDPOINT}
+  bucketName: ${MINIO_BUCKET_NAME}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}

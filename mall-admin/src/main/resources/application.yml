@@ -5,24 +5,36 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:mysql://localhost:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://db:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
     password: root
     druid:
-      initial-size: 5 #连接池初始化大小
+      initial-size: 10 #连接池初始化大小
       min-idle: 10 #最小空闲连接数
-      max-active: 20 #最大连接数
+      max-active: 30 #最大连接数
+      max-wait: 60000 #获取连接的最大等待时间（毫秒）
+      time-between-eviction-runs-millis: 60000 #间隔多久进行一次检测
+      min-evictable-idle-time-millis: 30000 #一个连接在池中最小空闲时间
+      test-while-idle: true #池中的连接空闲时是否被检测
+      test-on-borrow: false #取出一个连接时是否检查其可用性
+      test-on-return: false #归还一个连接时是否检查其可用性
+      validation-query: SELECT 1 FROM DUAL #检测连接的有效性的SQL
       web-stat-filter:
         exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
       stat-view-servlet: #访问监控网页的登录用户名和密码
         login-username: druid
-        login-password: druid
+        login-password: ${DRUID_LOGIN_PASSWORD:druid}
+      filter:
+        stat:
+          log-slow-sql: true #是否启用慢查询日志
+          slow-sql-millis: 3000 #慢查询阈值（毫秒）
+          merge-sql: true #合并SQL执行统计
   data:
     redis:
-      host: localhost # Redis服务器地址
+      host: ${REDIS_HOST:localhost} # Redis服务器地址
       database: 0 # Redis数据库索引（默认为0）
-      port: 6379 # Redis服务器连接端口
-      password:  # Redis服务器连接密码（默认为空）
+      port: ${REDIS_PORT:6379} # Redis服务器连接端口
+      password: ${REDIS_PASSWORD:} # Redis服务器连接密码
       timeout: 3000ms # 连接超时时间（毫秒）
   servlet:
     multipart:
@@ -54,21 +66,21 @@ redis:
     common: 86400 # 24小时
 aliyun:
   oss:
-    endpoint: oss-cn-shenzhen.aliyuncs.com # oss对外服务的访问域名
-    accessKeyId: test # 访问身份验证中用到用户标识
-    accessKeySecret: test # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
-    bucketName: macro-oss # oss的存储空间
+    endpoint: ${ALIYUN_OSS_ENDPOINT:oss-cn-shenzhen.aliyuncs.com} # oss对外服务的访问域名
+    accessKeyId: ${ALIYUN_OSS_ACCESS_KEY_ID:test} # 访问身份验证中用到用户标识
+    accessKeySecret: ${ALIYUN_OSS_ACCESS_KEY_SECRET:test} # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
+    bucketName: ${ALIYUN_OSS_BUCKET_NAME:macro-oss} # oss的存储空间
     policy:
       expire: 300 # 签名有效期(S)
     maxSize: 10 # 上传文件大小(M)
-    callback: http://39.98.190.128:8080/aliyun/oss/callback # 文件上传成功后的回调地址
+    callback: ${ALIYUN_OSS_CALLBACK:http://39.98.190.128:8080/aliyun/oss/callback} # 文件上传成功后的回调地址
     dir:
       prefix: mall/images/ # 上传文件夹路径前缀
 minio:
-  endpoint: http://locahost:9000 #MinIO服务所在地址
-  bucketName: mall #存储桶名称
-  accessKey: minioadmin #访问的key
-  secretKey: minioadmin #访问的秘钥
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000} #MinIO服务所在地址
+  bucketName: ${MINIO_BUCKET_NAME:mall} #存储桶名称
+  accessKey: ${MINIO_ACCESS_KEY:minioadmin} #访问的key
+  secretKey: ${MINIO_SECRET_KEY:minioadmin} #访问的秘钥
 springdoc:
   swagger-ui:
     # 修改Swagger UI路径
@@ -89,25 +101,32 @@ springdoc:
 sa-token:
   # token名称 (同时也是cookie名称)
   token-name: Authorization
-  # token有效期，单位秒，-1代表永不过期
-  timeout: 604800
-  # token临时有效期 (指定时间内无操作就视为token过期)，单位秒
-  active-timeout: -1
+  # token有效期，单位秒 (3600 = 1小时，提升安全性)
+  timeout: 3600
+  # token临时有效期 (指定时间内无操作就视为token过期)，单位秒 (1800 = 30分钟)
+  active-timeout: 1800
+  # token刷新时间，单位秒(在token过期前刷新)
+  refresh-time: 600
   # 是否允许同一账号并发登录 (为false时新登录挤掉旧登录)
-  is-concurrent: true
+  is-concurrent: false
   # 在多人登录同一账号时，是否共用一个token (为false时每次登录新建一个token)
   is-share: false
   # token风格
   token-style: uuid
   # 是否输出操作日志
-  is-log: false
+  is-log: true
   # 是否从cookie中读取token
   is-read-cookie: false
   # 是否从head中读取token
   is-read-header: true
   # token前缀
   token-prefix: Bearer
-  # jwt秘钥
-  jwt-secret-key: sa-secret-key123
+  # jwt秘钥 (生产环境应从环境变量读取)
+  jwt-secret-key: ${JWT_SECRET_KEY:sa-secret-key123-change-in-production}
   # 是否打印banner
   is-print: false
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: info
+    com.macro.mall: debug
