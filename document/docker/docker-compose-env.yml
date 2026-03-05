@@ -1,4 +1,3 @@
-version: '3'
 services:
   mysql:
     image: mysql:5.7
@@ -13,6 +12,12 @@ services:
       - /mydata/mysql/data/db:/var/lib/mysql #数据文件挂载
       - /mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
       - /mydata/mysql/log:/var/log/mysql #日志文件挂载
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     networks:
       mall-network:
         aliases:
@@ -26,6 +31,12 @@ services:
       - /mydata/redis/data:/data #数据文件挂载
     ports:
       - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     networks:
       - mall-network
   nginx:
@@ -52,6 +63,12 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
     networks:
       mall-network:
         aliases:
@@ -71,8 +88,16 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
-      - mall-network
+      mall-network:
+        aliases:
+          - es
   logstash:
     image: logstash:7.17.3
     container_name: logstash
@@ -81,9 +106,8 @@ services:
     volumes:
       - /mydata/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf #挂载logstash的配置文件
     depends_on:
-      - elasticsearch #kibana在elasticsearch启动之后再启动
-    links:
-      - elasticsearch:es #可以用es这个域名访问elasticsearch服务
+      elasticsearch:
+        condition: service_healthy
     ports:
       - 4560:4560
       - 4561:4561
@@ -94,12 +118,11 @@ services:
   kibana:
     image: kibana:7.17.3
     container_name: kibana
-    links:
-      - elasticsearch:es #可以用es这个域名访问elasticsearch服务
     depends_on:
-      - elasticsearch #kibana在elasticsearch启动之后再启动
+      elasticsearch:
+        condition: service_healthy
     environment:
-      - "elasticsearch.hosts=http://es:9200" #设置访问elasticsearch的地址
+      - "elasticsearch.hosts=http://elasticsearch:9200" #设置访问elasticsearch的地址
     ports:
       - 5601:5601
     networks:
@@ -111,16 +134,12 @@ services:
       - /mydata/mongo/db:/data/db #数据文件挂载
     ports:
       - 27017:27017
-    networks:
-      - mall-network
-  nacos-registry:
-    image: nacos/nacos-server:v2.1.0
-    container_name: nacos-registry
-    environment:
-      - "MODE=standalone"
-    ports:
-      - 8848:8848
-      - 9848:9848
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval \"db.adminCommand('ping')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
       - mall-network
 
