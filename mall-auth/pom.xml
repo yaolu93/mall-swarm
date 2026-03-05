@@ -22,12 +22,12 @@
         <dependency>
             <groupId>com.macro.mall</groupId>
             <artifactId>mall-common</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-data-redis</artifactId>
-                </exclusion>
-            </exclusions>
+            <!-- removed exclusion of redis since the auth module uses Redis classes -->
+        </dependency>
+        <!-- in case common still excludes, add explicit redis starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

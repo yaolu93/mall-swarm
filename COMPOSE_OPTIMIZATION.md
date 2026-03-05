@@ -163,15 +163,17 @@ These lines are now injected in `docker-compose-app.yml` for each service.  A se
 **Result**: startup order still honours health checks, and applications fall back to their embedded YAML files.  If you only care about non‑Nacos components (mysql, es, portal, etc.) you can simply skip launching Nacos entirely.
 
 ### ⚠️ Services Without Complete Configuration
-Some services (mall-admin, mall-search, etc.) may still fail if:
-- Required environment variables are missing (e.g., ALIYUN_OSS_CALLBACK, ALIYUN_OSS_BUCKET_NAME)
+Some services may still fail to start when:
+- Required environment variables are missing (e.g., `ALIYUN_OSS_*` and `MINIO_*` for **mall-admin**) – defaults exist in `application.yml` but the **prod** profile removes them, so the compose file now injects sane placeholder values (OSS endpoint/keys, bucket name, callback and MINIO_ENDPOINT/Bucket/credentials).  Without `MINIO_ENDPOINT` the service will fail during context initialization.
 - Nacos configuration isn't populated yet
-- The module was packaged without a library it depends on (mall-auth removes Redis starter)
+- A module was packaged without a library it needs.  For example **mall-auth** excluded the Redis starter, leading to `NoClassDefFoundError`; the dependency has now been restored in its `pom.xml` and the Docker image must be rebuilt.
 
-This is **NOT a networking issue** – the container itself starts, but the Spring context blows up.
+This is **NOT a networking issue** – the container starts but the Spring context fails during bean creation.
 
-**Solution**: provide missing env vars, fix the POM or re‑package the image, or temporarily remove the offending service from compose.
-
+**Solutions:**
+1. Add the required environment variables in `docker-compose-app.yml` or via `.env`/script.
+2. Fix the POM (done for mall-auth) and rebuild the corresponding images (`mvn clean install -DskipTests`), or remove the service from compose until it's ready.
+- Uses the startup script flags (`--skip-build`/`--no-nacos`) to control build and config when testing.  The `--no-nacos` mode also generates helpful defaults for MINIO and Feign URLs.
 ## Files Modified
 
 1. `document/docker/docker-compose-env.yml`
@@ -185,7 +187,17 @@ This is **NOT a networking issue** – the container itself starts, but the Spri
    - Removed all `external_links`
    - Added `depends_on` with `service_healthy` conditions to all app services
    - mall-portal now waits for: mysql, mongo, rabbitmq, redis, nacos-registry
+   - Included environment overrides for disabling Nacos and gateway discovery
+   - Injected **ALIYUN_OSS_* */ **MINIO_* defaults for mall-admin so it can boot
+   - Added `MALL_ADMIN_URL` / `MALL_PORTAL_URL` which are used when running
+     **mall-auth** without service discovery (Feign clients now use these URLs)
 
+3. `docker-build-and-run.sh` (added)
+   - Now supports command-line flags `--no-nacos` and `--skip-build`
+   - Generates `.env` to disable Nacos clients when requested
+   - Waits for container health status and prints summary
+   - Improved logging and usage instructions
+   - Added helper functions for environment/health checks
 ## Verification Checklist
 
 - [x] Compose files have valid YAML syntax

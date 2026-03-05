@@ -12,7 +12,17 @@ services:
       - SPRING_CLOUD_NACOS_DISCOVERY_ENABLED=false
       - SPRING_CLOUD_NACOS_CONFIG_ENABLED=false
       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+      # object storage defaults (used by prod profile)
+      - ALIYUN_OSS_ENDPOINT=oss-cn-shenzhen.aliyuncs.com
+      - ALIYUN_OSS_ACCESS_KEY_ID=test
+      - ALIYUN_OSS_ACCESS_KEY_SECRET=test
+      - ALIYUN_OSS_BUCKET_NAME=macro-oss
       - ALIYUN_OSS_CALLBACK=http://localhost:9000/oss/callback
+      # minio placeholders (admin service will not start without MINIO_ENDPOINT)
+      - MINIO_ENDPOINT=http://localhost:9000
+      - MINIO_BUCKET_NAME=mall
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
     depends_on:
       mysql:
         condition: service_healthy
@@ -77,6 +87,14 @@ services:
       - SPRING_CLOUD_NACOS_DISCOVERY_ENABLED=false
       - SPRING_CLOUD_NACOS_CONFIG_ENABLED=false
       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+      # Feign clients are configured with fixed URLs; environment variables
+      # are used by the @FeignClient annotations in mall-auth.  The defaults
+      # should resolve within the compose network.
+      - MALL_ADMIN_URL=http://mall-admin:8080
+      - MALL_PORTAL_URL=http://mall-portal:8085
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - mall-network
   mall-gateway:
