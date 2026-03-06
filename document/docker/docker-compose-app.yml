@@ -63,12 +63,15 @@ services:
       - SPRING_CLOUD_NACOS_DISCOVERY_ENABLED=false
       - SPRING_CLOUD_NACOS_CONFIG_ENABLED=false
       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+      - KAFKA_BOOTSTRAP=kafka:9092
     depends_on:
       mysql:
         condition: service_healthy
       mongo:
         condition: service_started
       rabbitmq:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
       redis:
         condition: service_started
@@ -116,6 +119,38 @@ services:
         condition: service_started
     networks:
       - mall-network
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    networks:
+      - mall-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - 9092:9092
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/kafka/9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - zookeeper
+    networks:
+      - mall-network
+
   mall-monitor:
     image: mall/mall-monitor:1.0-SNAPSHOT
     container_name: mall-monitor

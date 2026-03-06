@@ -24,6 +24,8 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 前台订单管理Service
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OmsPortalOrderServiceImpl.class);
+
     @Autowired
     private UmsMemberService memberService;
     @Autowired
@@ -65,6 +69,9 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     private OmsOrderItemMapper orderItemMapper;
     @Autowired
     private CancelOrderSender cancelOrderSender;
+
+    @Autowired
+    private com.macro.mall.portal.kafka.OrderEventProducer orderEventProducer;
 
     @Override
     public ConfirmOrderResult generateConfirmOrder(List<Long> cartIds) {
@@ -320,6 +327,12 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
             if (cancelOrder.getUseIntegration() != null) {
                 UmsMember member = memberService.getById(cancelOrder.getMemberId());
                 memberService.updateIntegration(cancelOrder.getMemberId(), member.getIntegration() + cancelOrder.getUseIntegration());
+            }
+            // 发布 Kafka 订单取消事件
+            try {
+                orderEventProducer.sendOrderCancelled(orderId);
+            } catch (Exception e) {
+                LOGGER.warn("failed to publish kafka order cancelled event", e);
             }
         }
     }

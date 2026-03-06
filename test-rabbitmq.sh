@@ -478,11 +478,23 @@ case "${1:-test}" in
         monitor_queues "$duration" 5
         ;;
     send)
-        # 发送单条消息
+        # 发送单条 RabbitMQ 消息
         check_rabbitmq_connection || exit 1
         order_id=${2:-"TEST-$(date +%s)"}
         delay=${3:-5000}
         send_test_message "$order_id" "$delay"
+        ;;
+    kafka)
+        # 发送 Kafka 测试事件
+        # 仅需启动 Kafka 和 portal 服务即可
+        kafka_broker=${2:-"kafka:9092"}
+        event=${3:-"ORDER_CANCELLED:TEST"}
+        echo -e "[INFO] Sending Kafka message to $kafka_broker topic order-events: $event"
+        # try Confluent CLI inside container
+        docker exec kafka bash -lc "/usr/bin/kafka-console-producer --broker-list $kafka_broker --topic order-events <<'EOM'
+$event
+EOM"
+
         ;;
     purge)
         # 清空队列
@@ -518,6 +530,11 @@ case "${1:-test}" in
 命令 (Commands):
 
   test [--log]            运行完整测试 (--log 启用日志保存)
+  send <id> <delay>       发送单条 RabbitMQ 消息
+  purge                   清空 RabbitMQ 队列
+  check                   仅检查 RabbitMQ 配置
+  logs                    列出/查看脚本日志
+  kafka [broker] [event]  通过 Kafka 发送示例事件 (需 docker 容器 kafka 运行)
   monitor [duration]      监控队列 (秒数, 默认120)
   send [order_id] [delay] 发送测试消息 (延迟毫秒)
   purge                   清空所有测试队列

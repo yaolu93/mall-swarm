@@ -61,7 +61,7 @@ mall
 ├── mall-monitor -- 基于Spring Boot Admin的微服务监控中心
 ├── mall-admin -- 后台管理系统服务
 ├── mall-search -- 基于Elasticsearch的商品搜索系统服务
-├── mall-portal -- 移动端商城系统服务
+├── mall-portal -- 移动端商城系统服务 (附带 Kafka 生产/消费示例)
 ├── mall-demo -- 微服务远程调用测试服务
 └── config -- 配置中心存储的配置
 ```

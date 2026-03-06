@@ -46,24 +46,16 @@ spring:
     virtual-host: /mall
     username: mall
     password: mall
-mybatis:
-  mapper-locations:
-    - classpath:dao/*.xml
-    - classpath*:com/**/mapper/*.xml
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*' #暴露Actuator的监控端点
-  endpoint:
-    health:
-      show-details: always #显示健康的详细信息
-    env:
-      show-values: always #默认Actuator的环境变量会以****显示，这里开启显示
-    configprops:
-      show-values: always #默认Actuator的配置属性会以****显示，这里开启显示
-    info:
-      enabled: true
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: mall-portal-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 redis:
   database: mall-swarm
   key:
@@ -73,10 +65,6 @@ redis:
   expire:
     authCode: 90 # 验证码超期时间
     common: 86400 # 24小时
-rabbitmq:
-  queue:
-    name:
-      cancelOrder: cancelOrderQueue
 springdoc:
   swagger-ui:
     # 修改Swagger UI路径
